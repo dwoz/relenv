@@ -832,7 +832,7 @@ class Builder:
             sys.stderr.flush()
             sys.exit(1)
 
-    def build(self, steps=None, cleanup=True):
+    def build(self, steps=None, cleanup=True, fail_fast=False):
         """
         Build!
 
@@ -886,16 +886,21 @@ class Builder:
                     is_failure = True
                 else:
                     is_failure = False
-                for name in waits:
-                    if proc.name in waits[name]:
-                        if is_failure:
-                            if name in processes:
-                                processes[name].terminate()
-                                time.sleep(0.1)
-                        waits[name].remove(proc.name)
-                    if not waits[name] and not events[name].is_set():
-                        events[name].set()
-
+                if fail_fast:
+                    for name in list(processes):
+                        processes.pop(name).terminate()
+                        time.sleep(0.1)
+                    break
+                else:
+                    for name in waits:
+                        if proc.name in waits[name]:
+                            if is_failure:
+                                if name in processes:
+                                    processes[name].terminate()
+                                    time.sleep(0.1)
+                            waits[name].remove(proc.name)
+                        if not waits[name] and not events[name].is_set():
+                            events[name].set()
         if fails:
             sys.stderr.write("The following failures were reported\n")
             for fail in fails:
