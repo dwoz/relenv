@@ -544,6 +544,7 @@ def runcmd(*args, **kwargs):
     kwargs["stdout"] = subprocess.PIPE
     # if "stderr" not in kwargs:
     kwargs["stderr"] = subprocess.PIPE
+    check = kwargs.get("check", True)
     if "universal_newlines" not in kwargs:
         kwargs["universal_newlines"] = True
     if sys.platform != "win32":
@@ -607,7 +608,7 @@ def runcmd(*args, **kwargs):
         te.join()
 
     p.wait()
-    if p.returncode != 0:
+    if check and p.returncode != 0:
         raise RelenvException("Build cmd '{}' failed".format(" ".join(args[0])))
     return p
 

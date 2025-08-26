@@ -339,7 +339,7 @@ def build_krb(env, dirs, logfp):
         stdout=logfp,
     )
     runcmd(["make", "-j8"], env=env, stderr=logfp, stdout=logfp)
-    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp)
+    runcmd(["make", "install"], env=env, stderr=logfp, stdout=logfp, check=False)
 
 
 def build_python(env, dirs, logfp):
