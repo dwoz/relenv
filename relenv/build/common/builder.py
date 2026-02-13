@@ -409,15 +409,13 @@ class Builder:
         root_log = logging.getLogger(None)
         if sys.platform == "win32":
             if not show_ui:
-                handler = logging.StreamHandler()
-                handler.setLevel(logging.getLevelName(log_level))
-                root_log.addHandler(handler)
+                stream_handler = logging.StreamHandler()
+                stream_handler.setLevel(logging.getLevelName(log_level))
+                root_log.addHandler(stream_handler)
 
-        for handler in root_log.handlers:
-            if isinstance(handler, logging.StreamHandler):
-                handler.setFormatter(
-                    logging.Formatter(f"%(asctime)s {name} %(message)s")
-                )
+        for h in root_log.handlers:
+            if isinstance(h, logging.StreamHandler):
+                h.setFormatter(logging.Formatter(f"%(asctime)s {name} %(message)s"))
 
         if not self.dirs.build.exists():
             os.makedirs(self.dirs.build, exist_ok=True)
@@ -431,8 +429,8 @@ class Builder:
             time.sleep(0.3)
 
         logfp = io.open(os.path.join(dirs.logs, "{}.log".format(name)), "w")
-        handler = logging.FileHandler(dirs.logs / f"{name}.log")
-        root_log.addHandler(handler)
+        file_handler = logging.FileHandler(dirs.logs / f"{name}.log")
+        root_log.addHandler(file_handler)
         root_log.setLevel(logging.NOTSET)
 
         # Add line count handler if tracking is enabled
@@ -497,7 +495,7 @@ class Builder:
             os.chdir(cwd)
             if line_count_handler is not None:
                 root_log.removeHandler(line_count_handler)
-            root_log.removeHandler(handler)
+            root_log.removeHandler(file_handler)
             logfp.close()
 
     def cleanup(self) -> None:

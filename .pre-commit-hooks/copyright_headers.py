@@ -20,7 +20,7 @@ SPDX_REGEX = re.compile(r"# SPDX-License-Identifier:.*")
 
 def check_copyright(files):
     for file in files:
-        contents = file.read_text()
+        contents = file.read_text(encoding="utf-8")
         if not contents.strip():
             # Don't add headers to empty files
             continue
@@ -42,7 +42,7 @@ def check_copyright(files):
             if not contents.endswith("\n"):
                 contents += "\n"
             if original_contents != contents:
-                file.write_text(contents)
+                file.write_text(contents, encoding="utf-8")
 
 
 def inject_copyright_header(contents):
